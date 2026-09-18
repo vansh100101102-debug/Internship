@@ -1,43 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronRight, Users, Briefcase, Calendar, Bell, Phone, User, ArrowRight, Globe, Award, Star, TrendingUp } from 'lucide-react';
+import { Menu, X, ChevronRight, Briefcase, Calendar, Bell, ArrowRight } from 'lucide-react';
 // import img1 from '../assets/vite.png';
 import Nav from './Nav';
 import Footer from './Footer';
 // import Hireforms from './Hireforms';
-import img1 from '../assets/1.png';
-import img2 from '../assets/2.png';
-import img3 from '../assets/3.png';
-
 
 const MainPage = () => {
   const navigate = useNavigate(); // Initialize the navigate function
-
-  const stats = [
-    { value: "100+", label: "Global Clients", icon: Globe },
-    { value: "2", label: "Countries", icon: Award },
-    { value: "98%", label: "Client Satisfaction", icon: Star },
-    { value: "24/7", label: "Support", icon: TrendingUp }
-  ];
 
   const services = [
     {
       title: "Design",
       description: "Our web design team has ample years of experience in the core areas of design to build a website that you need.",
-      icon: "🎨",
-      img:img1
+      icon: "🎨"
     },
     {
       title: "Development",
       description: "Looking out for customized solutions for your websites? Our team will develop and deliver a website that'll serve your purpose.",
-      icon: "💻",
-      img:img2
+      icon: "💻"
     },
     {
       title: "Marketing",
       description: "With researched digital marketing, we will ensure that new customers and clients are able to find your business",
-      icon: "📈" ,
-      img:img3
+      icon: "📈"
     }
   ];
 
@@ -216,77 +202,6 @@ const MainPage = () => {
         </div>
       </header>
 
-      {/* Stats Section */}
-      <section style={{ padding: '5rem 0', backgroundColor: 'white' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-              Our Impact in Numbers
-            </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
-              Trusted by organizations worldwide to deliver excellence
-            </p>
-          </div>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-            gap: '2rem' 
-          }}>
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                style={{
-                  textAlign: 'center',
-                  padding: '2rem',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '12px',
-                  border: '1px solid #e9ecef',
-                  transition: 'transform 0.3s ease'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-              >
-                <stat.icon size={40} style={{ color: 'var(--primary-red)', marginBottom: '1rem' }} />
-                <div style={{ fontSize: '3rem', fontWeight: '700', color: 'var(--primary-red)', marginBottom: '0.5rem' }}>
-                  {stat.value}
-                </div>
-                <div style={{ fontSize: '1.1rem', color: '#666', fontWeight: '500' }}>
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-
-        <button 
-              style={{
-                backgroundColor: 'var(--primary-red)',
-                color: 'white',
-                border: '2px solid white',
-                padding: '1rem 2rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-              onClick={() => navigate('/client-satisfaction')}
-              onMouseOver={(e) => {
-                e.target.style.backgroundColor = 'var(--primary-red)';
-                e.target.style.color = 'white';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.backgroundColor = 'var(--primary-red)';
-                e.target.style.color = 'white';
-              }}
-            >
-              Client Reviews
-            </button>
-             </div>
-      </section>
-
       {/* Services Section */}
       <section style={{ padding: '5rem 0', backgroundColor: '#f8f9fa' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
@@ -325,7 +240,6 @@ const MainPage = () => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
-                onClick={() => window.open(service.img, '_blank')}
               >
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
                   {service.icon}
@@ -338,6 +252,33 @@ const MainPage = () => {
                 </p>
               </div>
             ))}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
+            <button
+              style={{
+                backgroundColor: 'var(--primary-red)',
+                color: 'white',
+                border: 'none',
+                padding: '1rem 2.5rem',
+                borderRadius: '8px',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onClick={() => navigate('/hireforms')}
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = '#c0392b';
+                e.target.style.transform = 'translateY(-2px)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = 'var(--primary-red)';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              Hire Forms
+            </button>
           </div>
         </div>
       </section>
@@ -462,142 +403,6 @@ const MainPage = () => {
               >
                 Apply now <ChevronRight size={16} />
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Quick Access */}
-      <section style={{ padding: '5rem 0', backgroundColor: '#f8f9fa' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-              Quick Access
-            </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
-              Easy access to our key services and information
-            </p>
-          </div>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-            gap: '2rem' 
-          }}>
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '2rem',
-                borderRadius: '12px',
-                border: '1px solid #e9ecef',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-              onClick={() => navigate('/admin-profile')}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <User size={32} style={{ color: 'var(--primary-red)', marginBottom: '1rem' }} />
-              <h3 style={{ fontSize: '1.3rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-                Admin Profile
-              </h3>
-              <p style={{ color: '#666', marginBottom: '1rem' }}>
-                Meet our leadership team and administrators
-              </p>
-            </div>
-
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '2rem',
-                borderRadius: '12px',
-                border: '1px solid #e9ecef',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-              onClick={() => navigate('/certifications')}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <Users size={32} style={{ color: 'var(--primary-red)', marginBottom: '1rem' }} />
-              <h3 style={{ fontSize: '1.3rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-                Certifications
-              </h3>
-              <p style={{ color: '#666', marginBottom: '1rem' }}>
-                Extract your certifications and credentials
-              </p>
-            </div>
-
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '2rem',
-                borderRadius: '12px',
-                border: '1px solid #e9ecef',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-              onClick={() => navigate('/careers')}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <Briefcase size={32} style={{ color: 'var(--primary-red)', marginBottom: '1rem' }} />
-              <h3 style={{ fontSize: '1.3rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-                Careers
-              </h3>
-              <p style={{ color: '#666', marginBottom: '1rem' }}>
-                Join our team and grow your career
-              </p>
-            </div>
-
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '2rem',
-                borderRadius: '12px',
-                border: '1px solid #e9ecef',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-              onClick={() => navigate('/contact')}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <Phone size={32} style={{ color: 'var(--primary-red)', marginBottom: '1rem' }} />
-              <h3 style={{ fontSize: '1.3rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-                Contact Us
-              </h3>
-              <p style={{ color: '#666', marginBottom: '1rem' }}>
-                Get in touch with our expert team
-              </p>
             </div>
           </div>
         </div>
