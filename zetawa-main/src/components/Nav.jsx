@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Menu, X, Users, Phone, Briefcase, Bell, User } from 'lucide-react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Menu, X, Users, Phone, Briefcase, Bell, User, LogIn, LogOut, Shield } from 'lucide-react';
 import img1 from '../assets/vite.png';
+import { useAppContext } from '../context/AppContext';
 
 function ZetawaNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuAnimating, setIsMenuAnimating] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuth, user, isAdmin, logout } = useAppContext();
 
   const navigationItems = [
     { name: 'Home', path: '/' },
@@ -18,6 +21,22 @@ function ZetawaNav() {
     { name: 'Careers', path: '/careers', icon: Briefcase },
     { name: 'Press Release', path: '/press-release', icon: Bell },
   ];
+
+  const authItem = isAuth
+    ? { name: user?.name ? `Logout (${user.name.split(' ')[0]})` : 'Logout', path: null, icon: LogOut, action: 'logout' }
+    : { name: 'Login', path: '/login', icon: LogIn };
+
+  const adminItem = isAdmin ? { name: 'Admin Panel', path: '/admin', icon: Shield } : null;
+
+  const itemsForMenu = [...navigationItems, ...(adminItem ? [adminItem] : []), authItem];
+
+  const handleAuthClick = async (action) => {
+    if (action === 'logout') {
+      await logout();
+      if (location.pathname !== '/') navigate('/');
+    }
+    handleMenuClose();
+  };
 
   const handleNavClick = (path) => {
     navigate(path);
@@ -432,13 +451,13 @@ function ZetawaNav() {
             </button>
 
             <div className="menu-content" onClick={(e) => e.stopPropagation()}>
-              {navigationItems.map((item) => {
+              {itemsForMenu.map((item) => {
                 const IconComponent = item.icon;
                 return (
                   <div
                     key={item.name}
                     className="menu-item"
-                    onClick={() => handleNavClick(item.path)}
+                    onClick={() => (item.action === 'logout' ? handleAuthClick(item.action) : handleNavClick(item.path))}
                   >
                     {IconComponent && <IconComponent size={22} strokeWidth={2.5} />}
                     <span>{item.name}</span>
@@ -475,6 +494,32 @@ function ZetawaNav() {
                 </Link>
               );
             })}
+            {isAuth ? (
+              <button
+                onClick={() => handleAuthClick('logout')}
+                className="nav-link"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'white',
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <LogOut size={18} strokeWidth={2.5} />
+                <span>{user?.name ? `Logout (${user.name.split(' ')[0]})` : 'Logout'}</span>
+              </button>
+            ) : (
+              <Link to="/login" className="nav-link">
+                <LogIn size={18} strokeWidth={2.5} />
+                <span>Login</span>
+              </Link>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}

@@ -21,153 +21,22 @@ const Certifications = () => {
 
   const [searchCertNumber, setSearchCertNumber] = useState('');
   const [validationResult, setValidationResult] = useState(null);
-  const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [certificates, setCertificates] = useState([]);
 
-  // Sample certificate data with Google Drive links
-  const certificates = [
-    {
-      id: 1,
-      certificateNumber: 'ZD202501',
-      internName: 'Manjeet Kumar',
-      course: 'Data Analyst',
-      issueDate: '2025-05-05',
-      completionDate: '2025-07-05',
-      status: 'Valid',
-      duration: '3 months',
-      driveLink: internpdf2
-    },
-    {
-      id: 2,
-      certificateNumber: 'ZD202502', 
-      internName: 'Harshwardhan Rahul Patil',
-      course: 'Software Development',
-      issueDate: '2024-12-01',
-      completionDate: '2025-08-31',
-      status: 'Valid',
-      duration: '8 months',
-      driveLink: internpdf
-    },
+  useEffect(() => {
+    const fetchCerts = async () => {
+      try {
+        const res = await fetch('/api/certificates');
+        const data = await res.json();
+        if (data.success) setCertificates(data.data);
+      } catch (err) {
+        console.error('Failed to fetch certificates:', err);
+      }
+    };
+    fetchCerts();
+  }, []);
 
-    {
-  id: 3,
-  certificateNumber: 'ZD202503',
-  internName: 'Aditya Bhamu',
-  course: 'Graphic designer',
-  issueDate: '2025-06-20',
-  completionDate: '2025-09-20',
-  status: 'Valid',
-  duration: '2 months',
-  driveLink: internpdf3
-},
-
-{
-  id: 4,
-  certificateNumber: 'ZD202504',
-  internName: 'Monaf Ansari',
-  course: 'Web Development',
-  issueDate: '2025-11-01',
-  completionDate: '2025-10-02',  
-  status: 'Valid',
-  duration: '2 months',
-  driveLink: intern4
-},
-
-{
-  id: 5,
-  certificateNumber: 'ZD202505',
-  internName: 'Ikjot Kour',
-  course: 'Software Development Intern',
-  issueDate: '2025-11-05',
-  completionDate: '2025-09-31',   
-  status: 'Valid',
-  duration: '3 months',
-  driveLink: intern5
-},
-
-{
-  id: 6,
-  certificateNumber: 'ZD202601',
-  internName: 'Radha Raman',
-  course: 'Web Development',
-  issueDate: '2026-02-14',
-  completionDate: '2026-02-05',   
-  status: 'Valid',
-  duration: '2 months',
-  driveLink: intern6
-},
-
-{
-  id: 7,
-  certificateNumber: 'ZD202602',
-  internName: 'Saniya Dogra',
-  course: 'Machine Learning',
-  issueDate: '2026-02-14',
-  completionDate: '2026-02-05',   
-  status: 'Valid',
-  duration: '2 months',
-  driveLink: intern7
-},
-
-
-
-{
-  id: 8,
-  certificateNumber: 'ZD202603',
-  internName: 'Saniya Dogra',
-  course: 'SDE',
-  issueDate: '2026-03-20',
-  completionDate: '2026-02-28',   
-  status: 'Valid',
-  duration: '6 months',
-  driveLink: intern8
-},
-
-
-
-
-{
-  id: 9,
-  certificateNumber: 'ZD202604',
-  internName: 'Anupriya Singh',
-  course: 'Web Dev',
-  issueDate: '2026-06-24',
-  completionDate: '2026-06-22',   
-  status: 'Valid',
-  duration: '2 months',
-  driveLink: intern9
-},
-
-
-{
-  id: 10,
-  certificateNumber: 'ZD202606',
-  internName: 'Sneha Devi',
-  course: 'Web Dev',
-  issueDate: '2026-08-01',
-  completionDate: '2026-08-01',   
-  status: 'Valid',
-  duration: '1 month',
-  driveLink: intern10
-},
-
-
-{
-  id: 11,
-  certificateNumber: 'ZD202605',
-  internName: 'Sanskriti Pandey',
-  course: 'Web Dev',
-  issueDate: '2026-08-01',
-  completionDate: '2026-08-01',   
-  status: 'Valid',
-  duration: '1 month',
-  driveLink: intern11
-}
-
-  ];
-
-  const handleValidation = () => {
+  const handleValidation = async () => {
     if (!searchCertNumber.trim()) {
       setValidationResult({
         type: 'error',
@@ -176,46 +45,28 @@ const Certifications = () => {
       return;
     }
 
-    const certificate = certificates.find(cert => 
-      cert.certificateNumber.toLowerCase() === searchCertNumber.toLowerCase()
-    );
-
-    if (certificate) {
-      setValidationResult({
-        type: 'success',
-        message: 'Certificate found and validated!',
-        data: certificate
-      });
-    } else {
+    try {
+      const res = await fetch(`/api/certificates/verify/${encodeURIComponent(searchCertNumber.trim())}`);
+      const data = await res.json();
+      if (data.success) {
+        setValidationResult({
+          type: 'success',
+          message: 'Certificate found and validated!',
+          data: data.data
+        });
+      } else {
+        setValidationResult({
+          type: 'error',
+          message: 'Certificate not found. Please check the certificate number.'
+        });
+      }
+    } catch {
       setValidationResult({
         type: 'error',
-        message: 'Certificate not found. Please check the certificate number.'
+        message: 'Error verifying certificate. Please try again.'
       });
     }
   };
-
-  const handleAdminLogin = async () => {
-  try {
-    const res = await fetch("https://zetawa.onrender.com/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(adminCredentials)
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      setIsAdminLoggedIn(true);
-      setShowAdminLogin(false);
-    } else {
-      alert("Invalid credentials");
-    }
-
-  } catch (err) {
-    alert("Server error. Please try again later.");
-    console.error(err);
-  }
-};
 
   const resetSearch = () => {
     setSearchCertNumber('');
@@ -476,293 +327,6 @@ const Certifications = () => {
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Admin Section */}
-      <section className="section-padding" style={{ padding: '5rem 0', backgroundColor: 'white' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(126, 58, 65, 0.1), rgba(45, 45, 45, 0.05))',
-            borderRadius: '20px',
-            padding: '3rem',
-            border: '1px solid #e9ecef'
-          }}>
-            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <User size={48} style={{ color: 'var(--primary-red)', marginBottom: '1rem' }} />
-              <h2 className="section-title" style={{ fontSize: '2.5rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-                Administrator Access
-              </h2>
-              <p style={{ fontSize: '1.1rem', color: '#666', maxWidth: '600px', margin: '0 auto' }}>
-                Access the admin panel to manage certificates, view analytics, and oversee the verification system
-              </p>
-            </div>
-
-            {!isAdminLoggedIn && !showAdminLogin && (
-              <div style={{ textAlign: 'center' }}>
-                <button
-                  onClick={() => setShowAdminLogin(true)}
-                  style={{
-                    backgroundColor: 'var(--primary-red)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '1.25rem 2.5rem',
-                    borderRadius: '10px',
-                    fontSize: '1.1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = 'var(--primary-red-hover)'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = 'var(--primary-red)'}
-                >
-                  Admin Login
-                </button>
-              </div>
-            )}
-
-            {showAdminLogin && !isAdminLoggedIn && (
-              <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-                <div style={{
-                  backgroundColor: 'white',
-                  padding: '2.5rem',
-                  borderRadius: '15px',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                  border: '1px solid #e9ecef'
-                }}>
-                  <h3 style={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '2rem' }}>
-                    Admin Login
-                  </h3>
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <input
-                      type="text"
-                      placeholder="Username"
-                      value={adminCredentials.username}
-                      onChange={(e) => setAdminCredentials({...adminCredentials, username: e.target.value})}
-                      style={{
-                        width: '100%',
-                        padding: '1rem 1.5rem',
-                        border: '2px solid #e9ecef',
-                        borderRadius: '10px',
-                        fontSize: '1rem',
-                        outline: 'none',
-                        transition: 'border-color 0.3s ease'
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = 'var(--primary-red)'}
-                      onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '2rem' }}>
-                    <input
-                      type="password"
-                      placeholder="Password"
-                      value={adminCredentials.password}
-                      onChange={(e) => setAdminCredentials({...adminCredentials, password: e.target.value})}
-                      style={{
-                        width: '100%',
-                        padding: '1rem 1.5rem',
-                        border: '2px solid #e9ecef',
-                        borderRadius: '10px',
-                        fontSize: '1rem',
-                        outline: 'none',
-                        transition: 'border-color 0.3s ease'
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = 'var(--primary-red)'}
-                      onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button 
-                      onClick={handleAdminLogin}
-                      style={{
-                        flex: '1',
-                        backgroundColor: 'var(--primary-red)',
-                        color: 'white',
-                        border: 'none',
-                        padding: '1rem',
-                        borderRadius: '10px',
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.3s ease'
-                      }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = 'var(--primary-red-hover)'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = 'var(--primary-red)'}
-                    >
-                      Login
-                    </button>
-                    <button 
-                      onClick={() => setShowAdminLogin(false)}
-                      style={{
-                        flex: '1',
-                        backgroundColor: 'transparent',
-                        color: '#666',
-                        border: '2px solid #e9ecef',
-                        padding: '1rem',
-                        borderRadius: '10px',
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onMouseOver={(e) => {
-                        e.target.style.backgroundColor = '#f8f9fa';
-                        e.target.style.borderColor = '#dee2e6';
-                      }}
-                      onMouseOut={(e) => {
-                        e.target.style.backgroundColor = 'transparent';
-                        e.target.style.borderColor = '#e9ecef';
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                  <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-                    <small style={{ color: '#888', fontSize: '0.9rem' }}>
-                      {/* Demo credentials: admin / admin123<br />
-                      Try certificate numbers: ZD2025001, ZD2025002 */}
-                    </small>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {isAdminLoggedIn && (
-              <div>
-                {/* Admin Statistics */}
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-                  gap: '2rem',
-                  marginBottom: '3rem'
-                }}>
-                  {[
-                    { value: certificates.length, label: 'Total Certificates', color: 'var(--primary-red)' },
-                    { value: certificates.filter(c => c.status === 'Valid').length, label: 'Valid Certificates', color: '#28a745' },
-                    // { value: certificates.filter(c => c.status === 'Expired').length, label: 'Expired Certificates', color: '#ffc107' },
-                    // { value: new Set(certificates.map(c => c.course)).size, label: 'Active Courses', color: '#17a2b8' }
-                  ].map((stat, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        backgroundColor: 'white',
-                        padding: '2rem',
-                        borderRadius: '15px',
-                        textAlign: 'center',
-                        boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
-                        border: '1px solid #e9ecef',
-                        transition: 'transform 0.3s ease'
-                      }}
-                      onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-                      onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                    >
-                      <div style={{ fontSize: '2.5rem', fontWeight: '700', color: stat.color, marginBottom: '0.5rem' }}>
-                        {stat.value}
-                      </div>
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#2d2d2d', margin: '0' }}>
-                        {stat.label}
-                      </h3>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Admin Table */}
-                <div style={{
-                  backgroundColor: 'white',
-                  borderRadius: '15px',
-                  overflow: 'hidden',
-                  boxShadow: '0 5px 20px rgba(0,0,0,0.1)',
-                  border: '1px solid #e9ecef'
-                }}>
-                  <div style={{ 
-                    backgroundColor: 'var(--primary-red)', 
-                    color: 'white',
-                    padding: '1.5rem 2rem'
-                  }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: '600', margin: '0' }}>
-                      Certificate Management
-                    </h2>
-                  </div>
-                  
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr style={{ backgroundColor: '#f8f9fa' }}>
-                          {['Certificate #', 'Intern Name', 'Course', 'Completion Date', 'Status'].map((header) => (
-                            <th key={header} style={{
-                              padding: '1rem',
-                              textAlign: 'left',
-                              fontWeight: '600',
-                              color: '#2d2d2d',
-                              borderBottom: '2px solid #e9ecef'
-                            }}>
-                              {header}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {certificates.map((cert) => (
-                          <tr key={cert.id} style={{ borderBottom: '1px solid #e9ecef' }}>
-                            <td style={{ padding: '1rem', color: 'var(--primary-red)', fontWeight: '600' }}>
-                              {cert.certificateNumber}
-                            </td>
-                            <td style={{ padding: '1rem', color: '#2d2d2d', fontWeight: '500' }}>
-                              {cert.internName}
-                            </td>
-                            <td style={{ padding: '1rem', color: '#666' }}>{cert.course}</td>
-                            <td style={{ padding: '1rem', color: '#666' }}>{cert.completionDate}</td>
-                            <td style={{ padding: '1rem' }}>
-                              <span style={{
-                                padding: '0.5rem 1rem',
-                                borderRadius: '20px',
-                                fontSize: '0.9rem',
-                                fontWeight: '500',
-                                backgroundColor: cert.status === 'Valid' ? '#d4edda' : '#fff3cd',
-                                color: cert.status === 'Valid' ? '#155724' : '#856404'
-                              }}>
-                                {cert.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-                  <button 
-                    onClick={() => {
-                      setIsAdminLoggedIn(false);
-                      setAdminCredentials({ username: '', password: '' });
-                    }}
-                    style={{
-                      backgroundColor: 'transparent',
-                      color: '#666',
-                      border: '2px solid #e9ecef',
-                      padding: '1rem 2rem',
-                      borderRadius: '10px',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseOver={(e) => {
-                      e.target.style.backgroundColor = '#f8f9fa';
-                      e.target.style.borderColor = '#dee2e6';
-                    }}
-                    onMouseOut={(e) => {
-                      e.target.style.backgroundColor = 'transparent';
-                      e.target.style.borderColor = '#e9ecef';
-                    }}
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>

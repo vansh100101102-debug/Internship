@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import MainPage from './components/MainPage';
 import AdminProfile from './components/AdminProfile';
 import Certifications from './components/Certifications';
@@ -10,6 +11,10 @@ import PressRelease from './components/PressRelease';
 import Hireforms from './components/Hireforms';
 import AboutUs from './components/AboutUs';
 import ClientSatisfaction from './components/ClientSatisfaction';
+import Login from './components/Login';
+import Register from './components/Register';
+import EmailVerify from './components/EmailVerify';
+import ResetPassword from './components/ResetPassword';
 // Scroll-to-top helper component
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -35,9 +40,14 @@ const App = () => {
           <Route path="/hireforms" element={<Hireforms />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/client-satisfaction" element={<ClientSatisfaction />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-email" element={<EmailVerify />} />
 
         </Routes>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </Router>
   );
 };

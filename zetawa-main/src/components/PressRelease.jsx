@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Download, FileText, Calendar, Users, Bell, TrendingUp, Globe, Award } from 'lucide-react';
 import Nav from './Nav';
 import { Link } from 'react-router-dom';
@@ -10,36 +10,27 @@ import Footer from './Footer';
 
 const PressRelease = () => {
   const [selectedYear, setSelectedYear] = useState('FY2025');
+  const [pressReleases, setPressReleases] = useState({});
 
-  const pressReleases = {
-    
-    'FY2025': [
-      {
-        id: 11,
-        title: 'Viral Success Story - Company Achievement Goes Viral',
-        date: 'August 27, 2025',
-        type: 'Official Announcement',
-        source: 'LinkedIn',
-        linkedinUrl: 'https://www.linkedin.com/posts/tabrez-alam-59b6b61b3_like-happy-viral-activity-7335224155493081088-lQ1n'
-      },
-      {
-        id: 12,
-        title: 'Strategic Business Update and Company Activity',
-        date: 'August 15, 2025',
-        type: 'Business Update',
-        source: 'LinkedIn',
-        linkedinUrl: 'https://www.linkedin.com/posts/tabrez-alam-59b6b61b3_activity-7274659404732346368-tjI6'
-      },
-      {
-        id: 13,
-        title: 'Company Growth Milestone Announcement',
-        date: 'August 10, 2025',
-        type: 'Official Announcement',
-        source: 'LinkedIn',
-        linkedinUrl: 'https://www.linkedin.com/posts/tabrez-alam-59b6b61b3_activity-7274659404732346368-tjI6'
+  useEffect(() => {
+    const fetchReleases = async () => {
+      try {
+        const res = await fetch('/api/press-releases');
+        const data = await res.json();
+        if (data.success) {
+          const grouped = {};
+          data.data.forEach(r => {
+            if (!grouped[r.year]) grouped[r.year] = [];
+            grouped[r.year].push(r);
+          });
+          setPressReleases(grouped);
+        }
+      } catch (err) {
+        console.error('Failed to fetch press releases:', err);
       }
-    ]
-  };
+    };
+    fetchReleases();
+  }, []);
 
   const getTypeColor = (type) => {
     const colors = {
