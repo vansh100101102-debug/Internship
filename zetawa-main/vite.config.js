@@ -7,10 +7,10 @@ export default defineConfig({
   base: '/',
   server: {
     proxy: {
-      '/api/auth': 'http://localhost:4000',
-      '/api/user': 'http://localhost:4000',
-      '/api/press-releases': 'http://localhost:4000',
-      '/api/certificates': 'http://localhost:4000',
+      '/api': 'http://localhost:4000',
+      '/contact': 'http://localhost:4000',
+      '/health': 'http://localhost:4000',
+      '/admin': 'http://localhost:4000',
     },
   },
 });
