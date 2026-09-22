@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Phone, Mail, MapPin, Clock, Send, User, MessageSquare, Award, Shield, CheckCircle, Download, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, MapPin, Clock, Send, User, MessageSquare, Award, Shield, CheckCircle, ExternalLink } from 'lucide-react';
 import Nav from './Nav';
 import Footer from './Footer';
 import internpdf from '../assets/intern2.pdf'
@@ -71,16 +71,6 @@ const Certifications = () => {
   const resetSearch = () => {
     setSearchCertNumber('');
     setValidationResult(null);
-  };
-
-  const handleDownloadCertificate = (driveLink) => {
-    // Convert view link to download link
-    const downloadLink = driveLink.replace('/view?usp=sharing', '/export?format=pdf');
-    window.open(downloadLink, '_blank');
-  };
-
-  const handleViewCertificate = (driveLink) => {
-    window.open(driveLink, '_blank');
   };
 
   const CertificateImage = ({ certificate }) => (
@@ -272,9 +262,8 @@ const Certifications = () => {
                   {/* Download Buttons - Only show for valid certificates */}
                   {validationResult.type === 'success' && validationResult.data && (
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                      <button
-                        onClick={() => handleViewCertificate(validationResult.data.driveLink)}
-                        style={{
+                      {validationResult.data.certificateFile ? (
+                        <a href={`/${validationResult.data.certificateFile}`} target="_blank" rel="noopener noreferrer" style={{
                           backgroundColor: '#28a745',
                           color: 'white',
                           border: 'none',
@@ -289,39 +278,13 @@ const Certifications = () => {
                           gap: '0.5rem',
                           flex: '1',
                           minWidth: '200px',
-                          justifyContent: 'center'
-                        }}
-                        onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
-                        onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
-                      >
-                        <ExternalLink size={20} />
-                        View Certificate
-                      </button> 
-                      {/* <button
-                        onClick={() => handleDownloadCertificate(validationResult.data.driveLink)}
-                        style={{
-                          backgroundColor: '#007bff',
-                          color: 'white',
-                          border: 'none',
-                          padding: '1rem 2rem',
-                          borderRadius: '10px',
-                          fontSize: '1rem',
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          flex: '1',
-                          minWidth: '200px',
-                          justifyContent: 'center'
-                        }}
-                        onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-                        onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
-                      >
-                        <Download size={20} />
-                        Download PDF
-                      </button> */}
+                          justifyContent: 'center',
+                          textDecoration: 'none'
+                        }}>
+                          <ExternalLink size={20} />
+                          View Certificate File
+                        </a>
+                      ) : null}
                     </div>
                   )}
                 </div>

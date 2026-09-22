@@ -1,5 +1,5 @@
 import express from 'express'
-import upload from '../config/upload.js'
+import upload from '../config/cloudinary.js'
 import { getCertificates, verifyCertificate, createCertificate, updateCertificate, deleteCertificate } from '../controllers/certificateControllers.js'
 import adminAuth from '../middleware/adminAuth.js'
 

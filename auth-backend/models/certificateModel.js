@@ -8,7 +8,7 @@ const certificateSchema = new mongoose.Schema({
   completionDate: { type: String, required: true },
   status: { type: String, default: 'Valid' },
   duration: { type: String, default: '' },
-  driveLink: { type: String, default: '' },
+  certificateFile: { type: String, default: '' },
 }, { timestamps: true })
 
 const certificateModel = mongoose.models.certificate || mongoose.model('certificate', certificateSchema)

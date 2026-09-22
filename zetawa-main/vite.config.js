@@ -11,6 +11,7 @@ export default defineConfig({
       '/contact': 'http://localhost:4000',
       '/health': 'http://localhost:4000',
       '/admin': 'http://localhost:4000',
+      '/uploads': 'http://localhost:4000',
     },
   },
 });

@@ -1,4 +1,10 @@
 import certificateModel from "../models/certificateModel.js"
+import fs from "fs"
+import path from "path"
+import { fileURLToPath } from "url"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Get all certificates (public for verification)
 export const getCertificates = async (req, res) => {
@@ -29,7 +35,7 @@ export const verifyCertificate = async (req, res) => {
 // Create certificate (admin only)
 export const createCertificate = async (req, res) => {
   const { certificateNumber, internName, course, issueDate, completionDate, duration } = req.body
-  const driveLink = req.file ? req.file.path : (req.body.driveLink || '')
+  const certificateFile = req.file ? `uploads/${req.file.filename}` : ''
 
   if (!certificateNumber || !internName || !course) {
     return res.json({ success: false, message: 'Certificate number, intern name, and course are required' })
@@ -44,7 +50,7 @@ export const createCertificate = async (req, res) => {
       issueDate: issueDate || '',
       completionDate: completionDate || '',
       duration: duration || '',
-      driveLink: driveLink,
+      certificateFile,
     })
     await cert.save()
     res.json({ success: true, data: cert, message: 'Certificate created' })
@@ -57,12 +63,12 @@ export const createCertificate = async (req, res) => {
 export const updateCertificate = async (req, res) => {
   const { id } = req.params
   const { certificateNumber, internName, course, issueDate, completionDate, status, duration } = req.body
-  const driveLink = req.file ? req.file.path : (req.body.driveLink || '')
+  const certificateFile = req.file ? `uploads/${req.file.filename}` : (await certificateModel.findById(id))?.certificateFile || ''
 
   try {
     const cert = await certificateModel.findByIdAndUpdate(
       id,
-      { certificateNumber, internName, course, issueDate, completionDate, status, duration, driveLink },
+      { certificateNumber, internName, course, issueDate, completionDate, status, duration, certificateFile },
       { new: true }
     )
     if (!cert) {
@@ -78,10 +84,17 @@ export const updateCertificate = async (req, res) => {
 export const deleteCertificate = async (req, res) => {
   const { id } = req.params
   try {
-    const cert = await certificateModel.findByIdAndDelete(id)
+    const cert = await certificateModel.findById(id)
     if (!cert) {
       return res.json({ success: false, message: 'Certificate not found' })
     }
+    if (cert.certificateFile) {
+      const filePath = path.join(__dirname, '..', cert.certificateFile)
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath)
+      }
+    }
+    await certificateModel.findByIdAndDelete(id)
     res.json({ success: true, message: 'Certificate deleted' })
   } catch (error) {
     res.json({ success: false, message: error.message })

@@ -15,6 +15,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import EmailVerify from './components/EmailVerify';
 import ResetPassword from './components/ResetPassword';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminDashboard from './components/AdminDashboard';
+import AdminRoute from './components/AdminRoute';
 // Scroll-to-top helper component
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -44,6 +47,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<EmailVerify />} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
 
         </Routes>
       </div>

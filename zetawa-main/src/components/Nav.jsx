@@ -12,7 +12,7 @@ function ZetawaNav() {
   const location = useLocation();
   const { isAuth, user, isAdmin, logout } = useAppContext();
 
-  const navigationItems = [
+const navigationItems = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/aboutus' },
     { name: 'Admin Profile', path: '/admin-profile', icon: User },
@@ -494,6 +494,12 @@ function ZetawaNav() {
                 </Link>
               );
             })}
+            {isAdmin && (
+              <Link to="/admin" className="nav-link">
+                <Shield size={18} strokeWidth={2.5} />
+                <span>Admin Portal</span>
+              </Link>
+            )}
             {isAuth ? (
               <button
                 onClick={() => handleAuthClick('logout')}
