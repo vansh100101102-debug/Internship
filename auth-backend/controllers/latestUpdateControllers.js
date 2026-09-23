@@ -20,7 +20,8 @@ export const getLatestUpdates = async (req, res) => {
 // Create latest update (admin only)
 export const createLatestUpdate = async (req, res) => {
   const { title, date, description } = req.body
-  const file = req.file ? `uploads/${req.file.filename}` : ''
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const file = uploadedFile ? `uploads/${uploadedFile.filename}` : ''
   if (!title || !date) {
     return res.json({ success: false, message: 'Title and date are required' })
   }
@@ -38,9 +39,10 @@ export const updateLatestUpdate = async (req, res) => {
   const { id } = req.params
   const { title, date, description } = req.body
   const existingUpdate = await latestUpdateModel.findById(id)
-  const file = req.file ? `uploads/${req.file.filename}` : existingUpdate?.file || ''
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const file = uploadedFile ? `uploads/${uploadedFile.filename}` : existingUpdate?.file || ''
   try {
-    if (req.file && existingUpdate?.file) {
+    if (uploadedFile && existingUpdate?.file) {
       const oldFilePath = path.join(__dirname, '..', existingUpdate.file)
       if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath)
     }

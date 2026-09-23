@@ -35,7 +35,8 @@ export const verifyCertificate = async (req, res) => {
 // Create certificate (admin only)
 export const createCertificate = async (req, res) => {
   const { certificateNumber, internName, course, issueDate, completionDate, duration } = req.body
-  const certificateFile = req.file ? `uploads/${req.file.filename}` : ''
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const certificateFile = uploadedFile ? `uploads/${uploadedFile.filename}` : ''
 
   if (!certificateNumber || !internName || !course) {
     return res.json({ success: false, message: 'Certificate number, intern name, and course are required' })
@@ -63,7 +64,8 @@ export const createCertificate = async (req, res) => {
 export const updateCertificate = async (req, res) => {
   const { id } = req.params
   const { certificateNumber, internName, course, issueDate, completionDate, status, duration } = req.body
-  const certificateFile = req.file ? `uploads/${req.file.filename}` : (await certificateModel.findById(id))?.certificateFile || ''
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const certificateFile = uploadedFile ? `uploads/${uploadedFile.filename}` : (await certificateModel.findById(id))?.certificateFile || ''
 
   try {
     const cert = await certificateModel.findByIdAndUpdate(

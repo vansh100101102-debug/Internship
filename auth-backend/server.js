@@ -12,6 +12,7 @@ import certificateRouter from "./routes/certificateRoutes.js"
 import contactRouter from "./routes/contactRoutes.js"
 import reviewRouter from "./routes/reviewRoutes.js"
 import hireRouter from "./routes/hireRoutes.js"
+import serviceRouter from "./routes/serviceRoutes.js"
 import path from "path"
 import { fileURLToPath } from "url"
 
@@ -31,6 +32,10 @@ app.use('/uploads', express.static(path.join(__dirname, "uploads")))
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:5177',
+  'http://localhost:5178',
   'http://localhost:3000',
   'https://zetawa.com',
   'https://www.zetawa.com',
@@ -59,6 +64,7 @@ app.use('/api/press-releases', pressReleaseRouter)
 app.use('/api/certificates', certificateRouter)
 app.use('/api/latest-updates', latestUpdateRouter)
 app.use('/api/careers', careerRouter)
+app.use('/api/services', serviceRouter)
 
 // Contact & Admin routes
 app.use('/api/contact', contactRouter)

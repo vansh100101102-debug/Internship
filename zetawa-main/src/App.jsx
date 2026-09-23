@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import MainPage from './components/MainPage';
-import AdminProfile from './components/AdminProfile';
+import UserProfile from './components/UserProfile';
 import Certifications from './components/Certifications';
-import Contact from './components/Contact';
 import Careers from './components/Careers';
 import Events from './components/Events';
 import PressRelease from './components/PressRelease';
+import Services from './components/Services';
 import Hireforms from './components/Hireforms';
 import AboutUs from './components/AboutUs';
 import ClientSatisfaction from './components/ClientSatisfaction';
@@ -34,11 +34,11 @@ const App = () => {
       <div className="App">
         <Routes>
           <Route path="/" element={<MainPage />} />
-          <Route path="/admin-profile" element={<AdminProfile />} />
+          <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
           <Route path="/certifications" element={<Certifications />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/services" element={<Services />} />
           <Route path="/press-release" element={<PressRelease />} />
           <Route path="/hireforms" element={<Hireforms />} />
           <Route path="/aboutus" element={<AboutUs />} />
@@ -48,7 +48,7 @@ const App = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<EmailVerify />} />
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />

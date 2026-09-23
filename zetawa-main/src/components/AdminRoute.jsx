@@ -26,11 +26,15 @@ const AdminRoute = ({ children }) => {
     )
   }
 
+  const ADMIN_EMAIL = 'vansh100101102@gmail.com'
+  const { user } = useAppContext()
+  const hasAdminAccess = Boolean(user?.email === ADMIN_EMAIL)
+
   if (!isAuth) {
     return <Navigate to="/login" replace />
   }
 
-  if (!isAdmin) {
+  if (!hasAdminAccess) {
     return <Navigate to="/" replace />
   }
 

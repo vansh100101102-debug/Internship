@@ -90,13 +90,17 @@ export const AppProvider = ({ children }) => {
   }
 
   const logout = async () => {
+    setUser(null)
+    setIsAuth(false)
+    localStorage.removeItem("zetawa_user")
     try {
       const { data } = await axios.post(`${API_URL}/api/auth/logout`)
-      if (data.success) {
-        toast.success("Logged out")
+      if (data && data.success) {
+        toast.success("Logged out successfully")
       }
     } catch (error) {
-      toast.error(error.message)
+      console.error("Logout request error:", error)
+      toast.info("Logged out")
     } finally {
       setUser(null)
       setIsAuth(false)
@@ -194,12 +198,15 @@ export const AppProvider = ({ children }) => {
     init()
   }, [])
 
+  const ADMIN_EMAIL = 'vansh100101102@gmail.com'
+  const isAdmin = Boolean(user?.email === ADMIN_EMAIL)
+
   return (
     <AppContext.Provider
       value={{
         user,
         isAuth,
-        isAdmin: user?.isAdmin || false,
+        isAdmin,
         loading,
         login,
         register,

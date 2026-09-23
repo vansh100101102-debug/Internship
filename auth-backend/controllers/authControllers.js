@@ -17,7 +17,7 @@ export const register = async (req, res) => {
       return res.json({ success: false, message: "User already exists" })
     }
     const hashedPassword = await bcrypt.hash(password, 10)
-    const isAdmin = email === process.env.ADMIN_EMAIL
+    const isAdmin = email === 'vansh100101102@gmail.com'
     const user = new userModel({ name, email, password: hashedPassword, isAdmin })
 
     // Generate OTP before saving
@@ -62,15 +62,24 @@ export const login = async (req, res) => {
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000
     })
+    const ADMIN_EMAIL = 'vansh100101102@gmail.com'
+    const isAdmin = Boolean(user.email === ADMIN_EMAIL)
+    if (user.isAdmin !== isAdmin) {
+      user.isAdmin = isAdmin
+      await user.save()
+    }
+
     return res.json({
       success: true,
+      token,
       userData: {
         name: user.name,
         email: user.email,
         isAccountVerified: user.isAccountVerified,
-        isAdmin: user.isAdmin,
+        isAdmin: isAdmin,
       }
     })
+
   } catch (error) {
     return res.json({ success: false, message: error.message })
   }
@@ -78,10 +87,19 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+      expires: new Date(0),
+      maxAge: 0,
+    })
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
     })
     return res.json({ success: true, message: "Logged Out" })
   } catch (error) {

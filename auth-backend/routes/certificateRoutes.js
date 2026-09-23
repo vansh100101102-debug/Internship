@@ -10,8 +10,8 @@ certificateRouter.get('/', getCertificates)
 certificateRouter.get('/verify/:certificateNumber', verifyCertificate)
 
 // Admin only with file upload
-certificateRouter.post('/', adminAuth, upload.single('certificateFile'), createCertificate)
-certificateRouter.put('/:id', adminAuth, upload.single('certificateFile'), updateCertificate)
+certificateRouter.post('/', adminAuth, upload.any(), createCertificate)
+certificateRouter.put('/:id', adminAuth, upload.any(), updateCertificate)
 certificateRouter.delete('/:id', adminAuth, deleteCertificate)
 
 export default certificateRouter

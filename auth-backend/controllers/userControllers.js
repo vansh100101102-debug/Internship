@@ -9,13 +9,20 @@ export const getUserData = async (req, res) => {
       return res.json({ success: false, message: "User not found" })
     }
 
+    const ADMIN_EMAIL = 'vansh100101102@gmail.com'
+    const isAdmin = Boolean(user.email === ADMIN_EMAIL)
+    if (user.isAdmin !== isAdmin) {
+      user.isAdmin = isAdmin
+      await user.save()
+    }
+
     res.json({
       success: true,
       userData: {
         name: user.name,
         email: user.email,
         isAccountVerified: user.isAccountVerified,
-        isAdmin: user.isAdmin,
+        isAdmin: isAdmin,
       }
     })
   } catch (error) {

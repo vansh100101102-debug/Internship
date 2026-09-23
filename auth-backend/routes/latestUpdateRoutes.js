@@ -9,8 +9,8 @@ const latestUpdateRouter = express.Router()
 latestUpdateRouter.get('/', getLatestUpdates)
 
 // Admin only with file upload
-latestUpdateRouter.post('/', adminAuth, upload.single('file'), createLatestUpdate)
-latestUpdateRouter.put('/:id', adminAuth, upload.single('file'), updateLatestUpdate)
+latestUpdateRouter.post('/', adminAuth, upload.any(), createLatestUpdate)
+latestUpdateRouter.put('/:id', adminAuth, upload.any(), updateLatestUpdate)
 latestUpdateRouter.delete('/:id', adminAuth, deleteLatestUpdate)
 
 export default latestUpdateRouter

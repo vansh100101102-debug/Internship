@@ -54,7 +54,7 @@ const Login = () => {
             Welcome back
           </h1>
           <p style={{ color: "#777", marginBottom: "2rem" }}>
-            Sign in to your Zetawa account
+            Sign in to your Zetawa Dark account
           </p>
 
           <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#4a4a4a", marginBottom: "0.5rem" }}>

@@ -78,13 +78,10 @@ function Footer() {
 const quickLinks = [
   { name: 'Home', path: '/' },
   { name: 'About Us', path: '/aboutus' },
-  { name: 'Services', path: '/services' }, // you’ll need to create a Services route if not already
+  { name: 'Services', path: '/services' },
   { name: 'Careers', path: '/careers' },
-  { name: 'Events', path: '/events' },
-  { name: 'Press Release', path: '/press-release' },
   { name: 'Certifications', path: '/certifications' },
-  { name: 'Hire Forms', path: '/hireforms' },
-  { name: 'Contact', path: '/contact' }
+  { name: 'Press Releases', path: '/press-release' },
 ];
 
   return (
@@ -230,37 +227,7 @@ const quickLinks = [
           margin: 2rem 0;
         }
 
-     
 
-        .thank-you-section {
-          text-align: center;
-          padding: 3rem 2rem;
-          background: linear-gradient(135deg, #292727ff,30%, #7e3a41ff 50%, #68383eff 100%);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .thank-you-section::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-          animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-          0% { left: -100%; }
-          100% { left: 100%; }
-        }
-
-        .heart-beat {
-          display: inline-block;
-          animation: pulse 2s ease-in-out infinite;
-          color: #ff6b6b;
-        }
 
         @media (max-width: 768px) {
           .scroll-top-btn {
@@ -296,11 +263,11 @@ const quickLinks = [
           }}>
             
             {/* Company Info */}
-            {/* <div className="footer-section-left footer-card">
+            <div className="footer-section-left footer-card">
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
                 <div style={{
-                  width: '50px',
-                  height: '50px',
+                  width: '40px',
+                  height: '40px',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -309,49 +276,21 @@ const quickLinks = [
                   marginRight: '1rem',
                   boxShadow: '0 5px 15px rgba(157, 78, 85, 0.3)'
                 }}>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Z</span>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Z</span>
                 </div>
                 <div>
-                  <div className="gradient-text" style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>
+                  <div className="gradient-text" style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
                     ZETAWA DARK
                   </div>
-                  <div style={{ fontSize: '0.9rem', color: '#adb5bd' }}>
+                  <div style={{ fontSize: '0.8rem', color: '#adb5bd' }}>
                     PRIVATE LIMITED
                   </div>
                 </div>
               </div>
               <p style={{ color: '#adb5bd', lineHeight: '1.6', fontSize: '0.95rem' }}>
-                A Social Software Agency That Thrives on Your Success. We transform ideas into powerful digital solutions.
+                We design, build, and market intelligent software solutions and websites to help your business grow and thrive in the digital age.
               </p>
-              <div style={{ marginTop: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: '#adb5bd' }}>
-                  <MapPin size={18} />
-                  <span style={{ fontSize: '0.9rem' }}>Building innovative solutions worldwide</span>
-                </div>
-              </div>
-            </div> */}
-
-             {/* Thank You Section */}
-      <div className="thank-you-section">
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <h2 style={{ 
-            fontSize: isMobile ? '1.8rem' : '2.5rem', 
-            fontWeight: 'bold',
-            marginBottom: '1rem',
-            color: 'white'
-          }}>
-            Thank You for Visiting! <Heart className="heart-beat" style={{ display: 'inline', marginLeft: '10px' }} size={isMobile ? 28 : 36} />
-          </h2>
-          <p style={{ 
-            fontSize: isMobile ? '1rem' : '1.2rem',
-            color: 'rgba(255,255,255,0.9)',
-            maxWidth: '800px',
-            margin: '0 auto'
-          }}>
-            We appreciate your time exploring our services. Let's build something amazing together!
-          </p>
-        </div>
-      </div>
+            </div>
 
             {/* Quick Links */}
             <div className="footer-section-right">

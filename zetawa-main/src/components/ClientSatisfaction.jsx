@@ -3,9 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Nav from "./Nav";
 import Footer from "./Footer";
 
-// Change if deployed later
-// const BACKEND_URL = "https://zetawa-dark-feedback.onrender.com/api/reviews";
-const BACKEND_URL = "https://zetawa.onrender.com/api/reviews";
+const BACKEND_URL = "/api/reviews";
 
 
 export default function ClientSatisfaction() {

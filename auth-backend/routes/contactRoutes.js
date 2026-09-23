@@ -55,7 +55,8 @@ const handleContactForm = async (req, res) => {
 
     res.status(200).json({
       message: "Message sent successfully!",
-      routedTo: targetEmail
+      routedTo: targetEmail,
+      sentTo: targetEmail
     });
   } catch (error) {
     console.error("Email error:", error);
