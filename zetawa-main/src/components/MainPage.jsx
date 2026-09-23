@@ -1,10 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronRight, Briefcase, Calendar, Bell, ArrowRight } from 'lucide-react';
+import { Menu, X, ChevronRight, Calendar, Bell, ArrowRight } from 'lucide-react';
 // import img1 from '../assets/vite.png';
 import Nav from './Nav';
 import Footer from './Footer';
 // import Hireforms from './Hireforms';
+const LatestUpdates = () => {
+  const [updates, setUpdates] = useState([])
+  useEffect(() => {
+    fetch('/api/latest-updates')
+      .then(res => res.json())
+      .then(data => { if (data.success) setUpdates(data.data) })
+      .catch(err => console.error('Failed to fetch latest updates:', err))
+  }, [])
+
+  if (updates.length === 0) return null
+
+  return (
+    <section style={{ padding: '5rem 0', backgroundColor: 'white' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
+            Latest Updates
+          </h2>
+          <p style={{ fontSize: '1.1rem', color: '#666' }}>
+            Stay informed about our latest developments and achievements
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+          {updates.map(update => (
+            <div key={update._id} style={{
+              padding: '2rem',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '12px',
+              border: '1px solid #e9ecef',
+              transition: 'transform 0.3s ease',
+              cursor: 'pointer'
+            }}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+                <Bell size={20} style={{ color: 'var(--primary-red)', marginRight: '0.5rem' }} />
+                <span style={{ color: 'var(--primary-red)', fontWeight: '600' }}>Update</span>
+              </div>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
+                {update.title}
+              </h3>
+              <p style={{ color: '#666', marginBottom: '1rem', lineHeight: '1.6' }}>
+                {update.description}
+              </p>
+              {update.file && (
+                <a href={`/${update.file}`} target="_blank" rel="noopener noreferrer" style={{
+                  color: 'var(--primary-red)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '500', textDecoration: 'none'
+                }}>
+                  View <ChevronRight size={16} />
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
 
 const MainPage = () => {
   const navigate = useNavigate(); // Initialize the navigate function
@@ -284,131 +343,9 @@ const MainPage = () => {
       </section>
 
       {/* Latest Updates */}
-      <section style={{ padding: '5rem 0', backgroundColor: 'white' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-              Latest Updates
-            </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
-              Stay informed about our latest developments and achievements
-            </p>
-          </div>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-            gap: '2rem' 
-          }}>
-            <div style={{
-              padding: '2rem',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '12px',
-              border: '1px solid #e9ecef',
-              transition: 'transform 0.3s ease',
-              cursor: 'pointer'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-            onClick={() => navigate('/press-release')}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Bell size={20} style={{ color: 'var(--primary-red)', marginRight: '0.5rem' }} />
-                <span style={{ color: 'var(--primary-red)', fontWeight: '600' }}>New Release</span>
-              </div>
-              <h3 style={{ fontSize: '1.3rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-                Company Expansion And Updates
-              </h3>
-              <p style={{ color: '#666', marginBottom: '1rem', lineHeight: '1.6' }}>
-                We're excited to announce our expansion into new markets and services.
-              </p>
-              <div 
-                style={{ 
-                  color: 'var(--primary-red)', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  fontWeight: '500'
-                }}
-              >
-                Read more <ChevronRight size={16} />
-              </div>
-            </div>
+       <LatestUpdates />
 
-            {/* <div style={{
-              padding: '2rem',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '12px',
-              border: '1px solid #e9ecef',
-              transition: 'transform 0.3s ease',
-              cursor: 'pointer'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-            onClick={() => navigate('/events')}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Calendar size={20} style={{ color: 'var(--primary-red)', marginRight: '0.5rem' }} />
-                <span style={{ color: 'var(--primary-red)', fontWeight: '600' }}>Upcoming Event</span>
-              </div>
-              <h3 style={{ fontSize: '1.3rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-                Annual Conference 2025 and other Events
-              </h3>
-              <p style={{ color: '#666', marginBottom: '1rem', lineHeight: '1.6' }}>
-                Join us for our annual conference featuring industry leaders and innovation.
-              </p>
-              <div 
-                style={{ 
-                  color: 'var(--primary-red)', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  fontWeight: '500'
-                }}
-              >
-                Learn more <ChevronRight size={16} />
-              </div>
-            </div> */}
-
-            <div style={{
-              padding: '2rem',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '12px',
-              border: '1px solid #e9ecef',
-              transition: 'transform 0.3s ease',
-              cursor: 'pointer'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-            onClick={() => navigate('/careers')}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Briefcase size={20} style={{ color: 'var(--primary-red)', marginRight: '0.5rem' }} />
-                <span style={{ color: 'var(--primary-red)', fontWeight: '600' }}>Career Opportunity</span>
-              </div>
-              <h3 style={{ fontSize: '1.3rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
-                We're Hiring!
-              </h3>
-              <p style={{ color: '#666', marginBottom: '1rem', lineHeight: '1.6' }}>
-                Discover exciting career opportunities and join our growing team.
-              </p>
-              <div 
-                style={{ 
-                  color: 'var(--primary-red)', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  fontWeight: '500'
-                }}
-              >
-                Apply now <ChevronRight size={16} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
+       {/* Call to Action */}
       <section style={{ padding: '5rem 0', backgroundColor: 'white' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
           <div style={{ 

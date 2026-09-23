@@ -1,8 +1,8 @@
 import Lottie from "lottie-react";
 import newBadgeAnimation from "/src/assets/lottie/new-badge.json";
 
-import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, MapPin, Clock, Users, Award, ArrowRight, Mail, Phone } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, ChevronRight, MapPin, Clock, Users, Award, ArrowRight, Mail, Phone, Briefcase } from 'lucide-react';
 import Nav from './Nav';
 import img1 from '../assets/surendra.jpeg';
 import img2 from '../assets/someone.jpg'
@@ -15,10 +15,18 @@ import Footer from './Footer';
 const Careers = () => {
   const [expandedJob, setExpandedJob] = useState(null);
   const [activeTab, setActiveTab] = useState('culture');
+  const [jobs, setJobs] = useState([]);
 
-   const jobOpenings = [
+  useEffect(() => {
+    fetch('/api/careers')
+      .then(res => res.json())
+      .then(data => { if (data.success) setJobs(data.data) })
+      .catch(err => console.error('Failed to fetch careers:', err))
+  }, [])
+
+   const jobOpenings = jobs.length > 0 ? jobs : [
   {
-    id: 1,
+    _id: "1",
     title: "3D Animation",
     department: "Technology",
     location: "Remote",
@@ -33,7 +41,7 @@ const Careers = () => {
     ]
   },
   {
-    id: 2,
+    _id: "2",
     title: "Android Developer",
     department: "Analytics",
     location: "Remote",
@@ -48,7 +56,7 @@ const Careers = () => {
     ]
   },
   {
-    id: 3,
+    _id: "3",
     title: "UX Designer",
     department: "Design",
     location: "Remote",
@@ -63,7 +71,7 @@ const Careers = () => {
     ]
   },
   {
-    id: 4,
+    _id: "4",
     title: "Software Developer",
     department: "Strategy",
     location: "Remote",
@@ -78,7 +86,7 @@ const Careers = () => {
     ]
   },
   {
-    id: 5,
+    _id: "5",
     title: "Machine Learning",
     department: "Strategy",
     location: "Remote",
@@ -328,6 +336,7 @@ const Careers = () => {
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '1rem' }}>
+              <Briefcase size={24} style={{ color: 'var(--primary-red)', marginRight: '0.5rem' }} />
               Current Job And Internship Openings
             </h2>
             <p style={{ fontSize: '1.1rem', color: '#666' }}>
@@ -475,14 +484,14 @@ const Careers = () => {
 
             {jobOpenings.map((job) => (
               <div
-                key={job.id}
+                key={job._id}
                 style={{
                   backgroundColor: 'white',
                   borderRadius: '12px',
                   border: '1px solid #e9ecef',
                   overflow: 'hidden',
                   transition: 'all 0.3s ease',
-                  boxShadow: expandedJob === job.id ? '0 8px 25px rgba(0,0,0,0.1)' : '0 2px 10px rgba(0,0,0,0.05)'
+                  boxShadow: expandedJob === job._id ? '0 8px 25px rgba(0,0,0,0.1)' : '0 2px 10px rgba(0,0,0,0.05)'
                 }}
               >
                 <div
@@ -493,7 +502,7 @@ const Careers = () => {
                     justifyContent: 'space-between',
                     alignItems: 'center'
                   }}
-                  onClick={() => toggleJob(job.id)}
+                  onClick={() => toggleJob(job._id)}
                 >
                   <div style={{ flex: 1 }}>
                     <h3 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#2d2d2d', marginBottom: '0.5rem' }}>
@@ -514,11 +523,11 @@ const Careers = () => {
                     </div>
                   </div>
                   <div style={{ color: 'var(--primary-red)' }}>
-                    {expandedJob === job.id ? <ChevronDown size={24} /> : <ChevronRight size={24} />}
+                    {expandedJob === job._id ? <ChevronDown size={24} /> : <ChevronRight size={24} />}
                   </div>
                 </div>
 
-                {expandedJob === job.id && (
+                {expandedJob === job._id && (
                   <div style={{ 
                     padding: '0 2rem 2rem 2rem',
                     borderTop: '1px solid #e9ecef',
@@ -560,7 +569,7 @@ const Careers = () => {
                         onMouseOut={(e) => e.target.style.backgroundColor = 'var(--primary-red)'}
                         
                       >
-                        <a target="_blank" style={{color:"white" , textDecoration:"none"}} href="https://forms.gle/2gMcHVynaLx7Bei38">Apply Now</a>
+                        {job.applyLink && (<a target="_blank" style={{color:"white" , textDecoration:"none"}} href={job.applyLink}>Apply Now</a>)}
                         
                        
                       </button>

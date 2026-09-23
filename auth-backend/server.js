@@ -1,3 +1,5 @@
+import latestUpdateRouter from "./routes/latestUpdateRoutes.js"
+import careerRouter from "./routes/careerRoutes.js"
 import express from "express"
 import cors from "cors"
 import "dotenv/config"
@@ -55,6 +57,8 @@ app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter)
 app.use('/api/press-releases', pressReleaseRouter)
 app.use('/api/certificates', certificateRouter)
+app.use('/api/latest-updates', latestUpdateRouter)
+app.use('/api/careers', careerRouter)
 
 // Contact & Admin routes
 app.use('/api/contact', contactRouter)
