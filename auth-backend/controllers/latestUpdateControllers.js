@@ -1,6 +1,5 @@
 import latestUpdateModel from "../models/latestUpdateModel.js"
-import upload from "../config/cloudinary.js"
-import fs from "fs"
+import { uploadFileToCloudinary, deleteFileFromStorage } from "../config/cloudinary.js"
 import path from "path"
 import { fileURLToPath } from "url"
 
@@ -21,14 +20,23 @@ export const getLatestUpdates = async (req, res) => {
 export const createLatestUpdate = async (req, res) => {
   const { title, date, description } = req.body
   const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
-  const file = uploadedFile ? `uploads/${uploadedFile.filename}` : ''
+  let file = ''
+
   if (!title || !date) {
     return res.json({ success: false, message: 'Title and date are required' })
   }
   try {
+    if (uploadedFile) {
+      // 1. Staged in local disk first
+      const localFilePath = path.join(__dirname, '..', 'uploads', uploadedFile.filename)
+      // 2. Upload to Cloudinary; if success, deletes local file; if fail, retains local copy
+      const uploadRes = await uploadFileToCloudinary(localFilePath, 'zetawa_updates')
+      file = uploadRes.url || `uploads/${uploadedFile.filename}`
+    }
+
     const update = new latestUpdateModel({ title, date, description, file })
     await update.save()
-    res.json({ success: true, data: update, message: 'Latest update created' })
+    res.json({ success: true, data: update, message: 'Latest update created successfully' })
   } catch (error) {
     res.json({ success: false, message: error.message })
   }
@@ -38,23 +46,32 @@ export const createLatestUpdate = async (req, res) => {
 export const updateLatestUpdate = async (req, res) => {
   const { id } = req.params
   const { title, date, description } = req.body
-  const existingUpdate = await latestUpdateModel.findById(id)
   const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
-  const file = uploadedFile ? `uploads/${uploadedFile.filename}` : existingUpdate?.file || ''
+
   try {
-    if (uploadedFile && existingUpdate?.file) {
-      const oldFilePath = path.join(__dirname, '..', existingUpdate.file)
-      if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath)
+    const existingUpdate = await latestUpdateModel.findById(id)
+    if (!existingUpdate) {
+      return res.json({ success: false, message: 'Latest update not found' })
     }
+
+    let file = existingUpdate.file
+
+    if (uploadedFile) {
+      // Remove old file from Cloudinary or local disk
+      if (existingUpdate.file) {
+        await deleteFileFromStorage(existingUpdate.file)
+      }
+      const localFilePath = path.join(__dirname, '..', 'uploads', uploadedFile.filename)
+      const uploadRes = await uploadFileToCloudinary(localFilePath, 'zetawa_updates')
+      file = uploadRes.url || `uploads/${uploadedFile.filename}`
+    }
+
     const update = await latestUpdateModel.findByIdAndUpdate(
       id,
       { title, date, description, file },
       { new: true }
     )
-    if (!update) {
-      return res.json({ success: false, message: 'Latest update not found' })
-    }
-    res.json({ success: true, data: update, message: 'Latest update updated' })
+    res.json({ success: true, data: update, message: 'Latest update updated successfully' })
   } catch (error) {
     res.json({ success: false, message: error.message })
   }
@@ -69,10 +86,7 @@ export const deleteLatestUpdate = async (req, res) => {
       return res.json({ success: false, message: 'Latest update not found' })
     }
     if (update.file) {
-      const filePath = path.join(__dirname, '..', update.file)
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath)
-      }
+      await deleteFileFromStorage(update.file)
     }
     await latestUpdateModel.findByIdAndDelete(id)
     res.json({ success: true, message: 'Latest update deleted' })
@@ -80,3 +94,4 @@ export const deleteLatestUpdate = async (req, res) => {
     res.json({ success: false, message: error.message })
   }
 }
+

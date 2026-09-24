@@ -119,10 +119,11 @@ const AdminDashboard = () => {
   })
   const [certForm, setCertForm] = useState({
     certificateNumber: "", internName: "", course: "",
-    issueDate: "", completionDate: "", duration: ""
+    issueDate: "", completionDate: "", duration: "", certificateFile: ""
   })
   const [certFile, setCertFile] = useState(null)
   const [luFile, setLuFile] = useState(null)
+  const [syncingCloudinary, setSyncingCloudinary] = useState(false)
 
   const DEFAULT_PR_FORM = { title: "", date: "", type: "Official Announcement", source: "LinkedIn", linkedinUrl: "", year: "FY2025", content: "" }
   const DEFAULT_LU_FORM = { title: "", date: "", description: "", file: "" }
@@ -421,7 +422,11 @@ const AdminDashboard = () => {
   const handleCertSubmit = async (e) => {
     e.preventDefault()
     const formData = new FormData()
-    Object.keys(certForm).forEach(key => formData.append(key, certForm[key]))
+    Object.keys(certForm).forEach(key => {
+      if (certForm[key] !== undefined && certForm[key] !== null) {
+        formData.append(key, certForm[key])
+      }
+    })
     if (certFile) formData.append("file", certFile)
 
     try {
@@ -432,7 +437,7 @@ const AdminDashboard = () => {
       }
       setEditingId(null)
       setShowAddForm(false)
-      setCertForm({ certificateNumber: "", internName: "", course: "", issueDate: "", completionDate: "", duration: "" })
+      setCertForm({ certificateNumber: "", internName: "", course: "", issueDate: "", completionDate: "", duration: "", certificateFile: "" })
       setCertFile(null)
       fetchData()
     } catch (err) {
@@ -441,12 +446,29 @@ const AdminDashboard = () => {
   }
 
   const handleCertDelete = async (id) => {
-    if (!confirm("Are you sure?")) return
+    if (!confirm("Are you sure you want to delete this certificate?")) return
     try {
       await axios.delete(`${API_URL}/api/certificates/${id}`)
       fetchData()
     } catch (err) {
       alert(err.response?.data?.message || "Error deleting")
+    }
+  }
+
+  const handleSyncCloudinary = async () => {
+    try {
+      setSyncingCloudinary(true)
+      const res = await axios.post(`${API_URL}/api/certificates/sync-cloudinary`)
+      if (res.data.success) {
+        alert(res.data.message)
+        fetchData()
+      } else {
+        alert(res.data.message || "Failed to sync to Cloudinary")
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Cloudinary sync request failed")
+    } finally {
+      setSyncingCloudinary(false)
     }
   }
 
@@ -2005,11 +2027,31 @@ const AdminDashboard = () => {
                     </p>
                   </div>
 
-                  {!showAddForm && (
-                    <button onClick={() => { setShowAddForm(true); setEditingId(null); }} style={btnPrimary}>
-                      <Plus size={18} /> Issue Certificate
+                  <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+                    <button
+                      onClick={handleSyncCloudinary}
+                      disabled={syncingCloudinary}
+                      style={{
+                        ...btnSecondary,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.45rem",
+                        backgroundColor: "#f0fdf4",
+                        color: "#166534",
+                        borderColor: "#bbf7d0",
+                        fontWeight: 700
+                      }}
+                      title="Sync all local staged certificates directly to Cloudinary"
+                    >
+                      <RefreshCw size={16} className={syncingCloudinary ? "spin-animation" : ""} />
+                      {syncingCloudinary ? "Syncing..." : "Sync to Cloudinary"}
                     </button>
-                  )}
+                    {!showAddForm && (
+                      <button onClick={() => { setShowAddForm(true); setEditingId(null); setCertForm({ certificateNumber: "", internName: "", course: "", issueDate: "", completionDate: "", duration: "", certificateFile: "" }); setCertFile(null); }} style={btnPrimary}>
+                        <Plus size={18} /> Issue Certificate
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div style={{ background: "white", borderRadius: "18px", overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.04)", border: "1px solid #e8e0e2" }}>
@@ -2021,12 +2063,13 @@ const AdminDashboard = () => {
                         <th style={{ padding: "1.1rem 1.25rem", textAlign: "left", fontWeight: 700, color: "#522026", fontSize: "0.85rem", textTransform: "uppercase" }}>Domain / Course</th>
                         <th style={{ padding: "1.1rem 1.25rem", textAlign: "left", fontWeight: 700, color: "#522026", fontSize: "0.85rem", textTransform: "uppercase" }}>Issue Date</th>
                         <th style={{ padding: "1.1rem 1.25rem", textAlign: "left", fontWeight: 700, color: "#522026", fontSize: "0.85rem", textTransform: "uppercase" }}>Duration</th>
+                        <th style={{ padding: "1.1rem 1.25rem", textAlign: "left", fontWeight: 700, color: "#522026", fontSize: "0.85rem", textTransform: "uppercase" }}>Cloudinary Document</th>
                         <th style={{ padding: "1.1rem 1.25rem", textAlign: "center", fontWeight: 700, color: "#522026", fontSize: "0.85rem", textTransform: "uppercase" }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {certificates.length === 0 ? (
-                        <tr><td colSpan={6} style={{ padding: "4rem 2rem", textAlign: "center", color: "#999" }}>No certificates issued yet</td></tr>
+                        <tr><td colSpan={7} style={{ padding: "4rem 2rem", textAlign: "center", color: "#999" }}>No certificates issued yet</td></tr>
                       ) : certificates.map(c => (
                         <tr key={c._id} className="table-row-hover" style={{ borderTop: "1px solid #f2ebed", transition: "background 0.2s" }}>
                           <td style={{ padding: "1.1rem 1.25rem" }}>
@@ -2044,10 +2087,69 @@ const AdminDashboard = () => {
                           <td style={{ padding: "1.1rem 1.25rem", color: "#555", fontSize: "0.88rem" }}>{c.course}</td>
                           <td style={{ padding: "1.1rem 1.25rem", color: "#666", fontSize: "0.88rem" }}>{c.issueDate}</td>
                           <td style={{ padding: "1.1rem 1.25rem", color: "#666", fontSize: "0.88rem" }}>{c.duration || "N/A"}</td>
+                          <td style={{ padding: "1.1rem 1.25rem" }}>
+                            {c.certificateFile ? (
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", flexWrap: "wrap" }}>
+                                <a
+                                  href={c.certificateFile.startsWith('http') ? c.certificateFile : `http://localhost:4000/${c.certificateFile}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.35rem",
+                                    padding: "0.35rem 0.75rem",
+                                    borderRadius: "8px",
+                                    backgroundColor: c.certificateFile.startsWith('http') ? "#ecfdf5" : "#fdf2f4",
+                                    color: c.certificateFile.startsWith('http') ? "#065f46" : "#7e3a41",
+                                    border: c.certificateFile.startsWith('http') ? "1px solid #a7f3d0" : "1px solid #ecc9ce",
+                                    fontSize: "0.82rem",
+                                    fontWeight: 700,
+                                    textDecoration: "none"
+                                  }}
+                                  title={c.certificateFile}
+                                >
+                                  <ExternalLink size={13} />
+                                  {c.certificateFile.startsWith('http') ? "Cloudinary Link" : "View Local"}
+                                </a>
+                                {c.certificateFile.startsWith('http') && (
+                                  <button
+                                    onClick={() => handleCopy(c.certificateFile, `link-${c._id}`)}
+                                    style={{ background: "none", border: "none", cursor: "pointer", color: copiedId === `link-${c._id}` ? "#16a34a" : "#999", padding: "0.2rem" }}
+                                    title="Copy Direct Cloudinary Link">
+                                    {copiedId === `link-${c._id}` ? <CheckCheck size={14} /> : <Copy size={14} />}
+                                  </button>
+                                )}
+                              </div>
+                            ) : (
+                              <span style={{ color: "#aaa", fontSize: "0.82rem", fontStyle: "italic" }}>No document</span>
+                            )}
+                          </td>
                           <td style={{ padding: "1.1rem 1.25rem", textAlign: "center" }}>
-                            <button onClick={() => handleCertDelete(c._id)} className="action-icon-btn" style={{ background: "none", border: "none", cursor: "pointer", color: "#dc3545" }} title="Delete">
-                              <Trash2 size={17} />
-                            </button>
+                            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+                              <button
+                                onClick={() => {
+                                  setEditingId(c._id)
+                                  setCertForm({
+                                    certificateNumber: c.certificateNumber || "",
+                                    internName: c.internName || "",
+                                    course: c.course || "",
+                                    issueDate: c.issueDate || "",
+                                    completionDate: c.completionDate || "",
+                                    duration: c.duration || "",
+                                    certificateFile: c.certificateFile || "",
+                                  })
+                                  setShowAddForm(true)
+                                }}
+                                className="action-icon-btn"
+                                style={{ background: "none", border: "none", cursor: "pointer", color: "#0284c7" }}
+                                title="Edit Certificate">
+                                <Edit3 size={17} />
+                              </button>
+                              <button onClick={() => handleCertDelete(c._id)} className="action-icon-btn" style={{ background: "none", border: "none", cursor: "pointer", color: "#dc3545" }} title="Delete">
+                                <Trash2 size={17} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -2065,7 +2167,9 @@ const AdminDashboard = () => {
                     border: "2px solid #7e3a41"
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-                      <h3 style={{ margin: 0, color: "#2d2d2d", fontSize: "1.35rem", fontWeight: 800 }}>Issue Official Certificate</h3>
+                      <h3 style={{ margin: 0, color: "#2d2d2d", fontSize: "1.35rem", fontWeight: 800 }}>
+                        {editingId ? "Edit Certificate Credential" : "Issue Official Certificate"}
+                      </h3>
                       <button type="button" onClick={() => { setShowAddForm(false); setEditingId(null); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#999" }}>
                         <X size={20} />
                       </button>
@@ -2103,7 +2207,12 @@ const AdminDashboard = () => {
                           value={certForm.duration} onChange={(e) => handleChange("cert", "duration", e.target.value)} />
                       </div>
                       <div style={{ gridColumn: "1 / -1" }}>
-                        <label style={labelStyle}>Official Digital Seal / PDF Attachment</label>
+                        <label style={labelStyle}>Direct Cloudinary Link (Paste Cloudinary URL)</label>
+                        <input style={inputStyle} placeholder="https://res.cloudinary.com/..."
+                          value={certForm.certificateFile || ""} onChange={(e) => handleChange("cert", "certificateFile", e.target.value)} />
+                      </div>
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <label style={labelStyle}>OR Upload File (Staged on local disk, uploaded to Cloudinary, then deleted locally)</label>
                         <input type="file" onChange={(e) => setCertFile(e.target.files[0])} style={{ ...inputStyle, padding: "0.55rem" }} />
                       </div>
                     </div>
@@ -2170,7 +2279,22 @@ const AdminDashboard = () => {
                         <tr><td colSpan={4} style={{ padding: "4rem 2rem", textAlign: "center", color: "#999" }}>No notices posted yet</td></tr>
                       ) : latestUpdates.map(lu => (
                         <tr key={lu._id} className="table-row-hover" style={{ borderTop: "1px solid #f2ebed", transition: "background 0.2s" }}>
-                          <td style={{ padding: "1.1rem 1.25rem", fontWeight: 700, color: "#7e3a41" }}>{lu.title}</td>
+                          <td style={{ padding: "1.1rem 1.25rem", fontWeight: 700, color: "#7e3a41" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                              <span>{lu.title}</span>
+                              {lu.file && (
+                                <a
+                                  href={lu.file.startsWith('http') ? lu.file : `/${lu.file}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ color: "#7e3a41", display: "inline-flex", alignItems: "center" }}
+                                  title="View Attachment">
+                                  <ExternalLink size={14} />
+                                </a>
+                              )}
+                            </div>
+                          </td>
+
                           <td style={{ padding: "1.1rem 1.25rem", color: "#666", fontSize: "0.88rem" }}>{lu.date}</td>
                           <td style={{ padding: "1.1rem 1.25rem", color: "#555", fontSize: "0.88rem", maxWidth: "420px" }}>{lu.description}</td>
                           <td style={{ padding: "1.1rem 1.25rem", textAlign: "center" }}>

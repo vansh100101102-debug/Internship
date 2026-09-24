@@ -109,7 +109,7 @@ const LatestUpdates = () => {
                 {update.description}
               </p>
               {update.file && (
-                <a href={`/${update.file}`} target="_blank" rel="noopener noreferrer" style={{
+                <a href={update.file.startsWith('http') ? update.file : `http://localhost:4000/${update.file}`} target="_blank" rel="noopener noreferrer" style={{
                   color: '#7e3a41', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '600', textDecoration: 'none', fontSize: '0.88rem'
                 }}>
                   View Attachment <ChevronRight size={16} />
@@ -178,10 +178,10 @@ const PressReleasesSection = () => {
               letterSpacing: '0.5px',
               marginBottom: '0.6rem'
             }}>
-              <Newspaper size={14} /> NEWS &amp; ANNOUNCEMENTS
+              <Newspaper size={14} /> OFFICIAL ANNOUNCEMENTS
             </div>
             <h2 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#2d2d2d', margin: 0 }}>
-              Company Press &amp; Releases
+              Company Announcements &amp; Updates
             </h2>
           </div>
 
@@ -285,8 +285,9 @@ const PressReleasesSection = () => {
                 borderTop: '1px solid #f4f1f2'
               }}>
                 <span style={{ color: '#7e3a41', fontWeight: 700, fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                  Read Release <ChevronRight size={15} />
+                  Read Announcement <ChevronRight size={15} />
                 </span>
+
 
                 {release.linkedinUrl && (
                   <span

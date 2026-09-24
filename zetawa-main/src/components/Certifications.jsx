@@ -14,7 +14,8 @@ import {
   ShieldCheck, 
   ArrowRight,
   HelpCircle,
-  FileCheck
+  FileCheck,
+  CheckCheck
 } from 'lucide-react';
 import Nav from './Nav';
 import Footer from './Footer';
@@ -378,9 +379,9 @@ const Certifications = () => {
                   </div>
 
                   {validationResult.data.certificateFile && (
-                    <div style={{ textAlign: 'center' }}>
+                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                       <a
-                        href={`/${validationResult.data.certificateFile}`}
+                        href={validationResult.data.certificateFile.startsWith('http') ? validationResult.data.certificateFile : `http://localhost:4000/${validationResult.data.certificateFile}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
@@ -394,11 +395,18 @@ const Certifications = () => {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.5rem',
-                          boxShadow: '0 4px 14px rgba(126, 58, 65, 0.25)'
+                          boxShadow: '0 4px 14px rgba(126, 58, 65, 0.25)',
+                          transition: 'all 0.2s ease'
                         }}
                       >
                         <ExternalLink size={16} /> View &amp; Download Official Certificate Document
                       </a>
+                      <div style={{ marginTop: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: '0.82rem', color: '#666' }}>
+                        <CheckCheck size={15} color="#16a34a" />
+                        {validationResult.data.certificateFile.startsWith('http')
+                          ? 'Hosted directly on Cloudinary CDN'
+                          : 'Verified digital credential'}
+                      </div>
                     </div>
                   )}
                 </div>
