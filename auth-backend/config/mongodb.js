@@ -6,7 +6,12 @@ const connectDB = async () => {
     console.log("Auth Database connected")
   })
 
-  await mongoose.connect(`${process.env.MONGODB_URL}/mern-auth`)
+  let url = (process.env.MONGODB_URL || "").trim()
+  if (url && !url.includes("mern-auth") && !url.includes("?")) {
+    url = url.endsWith("/") ? `${url}mern-auth` : `${url}/mern-auth`
+  }
+
+  await mongoose.connect(url, { dbName: "mern-auth" })
 }
 
 export default connectDB
